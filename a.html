@@ -11,6 +11,8 @@
     <div id="token-display"></div>
 
     <script>
+      let generatedTokenId = null; // Variable to store the generated token ID
+
       async function generateToken() {
         try {
           const response = await fetch("http://localhost:9090/tokens/create", {
@@ -25,6 +27,7 @@
           }
 
           const tokenEntity = await response.json();
+          generatedTokenId = tokenEntity.tokenId; // Store the generated token ID
           document.getElementById("token-display").innerText =
             "Generated Token: " + tokenEntity.token;
         } catch (error) {
@@ -33,12 +36,16 @@
       }
 
       async function updateToken() {
-        const tokenId = prompt("Enter Token ID to update:");
+        if (generatedTokenId === null) {
+          alert("Please generate a token first.");
+          return;
+        }
+
         const newToken = prompt("Enter new Token value:");
 
         try {
           const response = await fetch(
-            `http://localhost:9090/tokens/update/${tokenId}`,
+            `http://localhost:9090/tokens/update/${generatedTokenId}`,
             {
               method: "PUT",
               headers: {
