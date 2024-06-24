@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Token Generator</title>
+  </head>
+  <body>
+    <button onclick="generateToken()" class="button">Generate Token</button>
+    <button onclick="updateToken()" class="button">Update Token</button>
+    <div id="token-display"></div>
+
+    <script>
+      async function generateToken() {
+        try {
+          const response = await fetch("http://localhost:9090/tokens/create", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const tokenEntity = await response.json();
+          document.getElementById("token-display").innerText =
+            "Generated Token: " + tokenEntity.token;
+        } catch (error) {
+          console.error("Error generating token:", error);
+        }
+      }
+
+      async function updateToken() {
+        const tokenId = prompt("Enter Token ID to update:");
+        const newToken = prompt("Enter new Token value:");
+
+        try {
+          const response = await fetch(
+            `http://localhost:9090/tokens/update/${tokenId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(newToken),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const tokenEntity = await response.json();
+          document.getElementById("token-display").innerText =
+            "Updated Token: " + tokenEntity.token;
+        } catch (error) {
+          console.error("Error updating token:", error);
+        }
+      }
+    </script>
+  </body>
+</html>
